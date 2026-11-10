@@ -1,64 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# FirstLaravel — IT0049 TSA3
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Tasks for Today Management System** built with Laravel 9 and MySQL.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Developer
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Field    | Value         |
+|----------|---------------|
+| Name     | Brent Verdera |
+| Username | bverdera      |
+| Subject  | IT0049 – Web Development (TSA3) |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Pages
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| URL          | Description                                      |
+|--------------|--------------------------------------------------|
+| `/`          | **Welcome** – Today's tasks with status summary  |
+| `/tasks`     | **Task List** – All tasks grouped and ordered by date |
+| `/profile`   | **Profile** – The seeded developer user record   |
+| `/about`     | **About** – Static developer info page           |
+| `/customers` | Customer list (TSA1/TSA2)                        |
+| `/users`     | User accounts list (TSA1/TSA2)                   |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Requirements
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- PHP 8.0+
+- Composer
+- MySQL (via XAMPP or any compatible server)
+- Laravel 9
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Setup Instructions
 
-## Contributing
+### 1. Clone / copy the project
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Place the project folder inside `c:\xampp\htdocs\` (or your web root).
 
-## Code of Conduct
+### 2. Install PHP dependencies
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+### 3. Configure environment
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Copy the example env file and edit your database credentials:
+
+```bash
+copy .env.example .env
+php artisan key:generate
+```
+
+Open `.env` and set:
+
+```ini
+DB_DATABASE=firstlaravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Create the database in phpMyAdmin (or MySQL CLI):
+
+```sql
+CREATE DATABASE firstlaravel;
+```
+
+### 4. Run migrations
+
+```bash
+php artisan migrate
+```
+
+To start fresh (drops all tables and re-runs):
+
+```bash
+php artisan migrate:fresh
+```
+
+### 5. Seed the database
+
+```bash
+php artisan db:seed
+```
+
+This runs:
+- `CustomerSeeder` — 6 customer records
+- `UserSeeder` — 7 user records (including the developer profile `bverdera`)
+- `TaskSeeder` — 9 tasks spread across 4 dates relative to today
+
+To reset and re-seed in one command:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
+
+## Running the App
+
+### Option A — XAMPP (recommended)
+
+1. Start Apache and MySQL in the XAMPP Control Panel.
+2. Open your browser and go to:  
+   `http://localhost/FirstLaravel-app/public`
+
+### Option B — Laravel dev server
+
+```bash
+php artisan serve
+```
+
+Then open: `http://localhost:8000`
+
+---
+
+## Database Schema
+
+### `tasks`
+
+| Column      | Type    | Notes                       |
+|-------------|---------|-----------------------------|
+| `id`        | bigint  | Primary key, auto-increment |
+| `title`     | string  |                             |
+| `status`    | string  | Default: `pending`          |
+| `task_date` | date    |                             |
+| `created_at`| timestamp |                           |
+| `updated_at`| timestamp |                           |
+
+### `users`
+
+| Column      | Type    | Notes                       |
+|-------------|---------|-----------------------------|
+| `id`        | bigint  | Primary key                 |
+| `username`  | string  | Unique                      |
+| `full_name` | string  |                             |
+| `name`      | string  |                             |
+| `email`     | string  | Unique                      |
+| `password`  | string  | Hashed                      |
+| `created_at`| timestamp |                           |
+| `updated_at`| timestamp |                           |
+
+---
+
+## MVC Structure
+
+```
+app/
+  Http/Controllers/
+    TaskController.php   ← welcome(), index(), profile()
+    PageController.php   ← about()
+    CustomerController.php
+    UserController.php
+  Models/
+    Task.php
+    User.php
+    Customer.php
+
+database/
+  migrations/
+    2026_11_10_000001_create_tasks_table.php
+  seeders/
+    TaskSeeder.php
+    UserSeeder.php
+    CustomerSeeder.php
+    DatabaseSeeder.php
+
+resources/views/
+  welcome.blade.php   ← /
+  tasks.blade.php     ← /tasks
+  profile.blade.php   ← /profile
+  about.blade.php     ← /about
+  customers.blade.php ← /customers
+  users.blade.php     ← /users
+
+routes/
+  web.php
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT

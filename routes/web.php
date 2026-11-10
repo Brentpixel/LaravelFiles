@@ -16,8 +16,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TaskController;
 
-Route::get('/',         [PageController::class,     'home'])->name('home');
-Route::get('/about',    [PageController::class,     'about'])->name('about');
-Route::get('/customers',[CustomerController::class, 'index'])->name('customers');
-Route::get('/users',    [UserController::class,     'index'])->name('users');
+// ── TSA3: Tasks for Today Management System ────────────────────────────────
+Route::get('/',        [TaskController::class, 'welcome'])->name('home');
+Route::get('/tasks',   [TaskController::class, 'index'])->name('tasks');
+Route::get('/profile', [TaskController::class, 'profile'])->name('profile');
+
+// ── TSA3: Static About page (identifies developer) ─────────────────────────
+Route::get('/about',   [PageController::class, 'about'])->name('about');
+
+// ── TSA1 / TSA2: Existing pages (preserved) ───────────────────────────────
+Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
+Route::get('/users',     [UserController::class,     'index'])->name('users');

@@ -166,6 +166,8 @@
     <h1>First<span>Laravel</span></h1>
     <nav>
         <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('tasks') }}">All Tasks</a>
+        <a href="{{ route('profile') }}">Profile</a>
         <a href="{{ route('about') }}">About</a>
         <a href="{{ route('customers') }}">Customers</a>
         <a href="{{ route('users') }}" class="active">Users</a>
