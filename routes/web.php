@@ -26,6 +26,16 @@ Route::get('/profile', [TaskController::class, 'profile'])->name('profile');
 // ── TSA3: Static About page (identifies developer) ─────────────────────────
 Route::get('/about',   [PageController::class, 'about'])->name('about');
 
-// ── TSA1 / TSA2: Existing pages (preserved) ───────────────────────────────
-Route::get('/customers', [CustomerController::class, 'index'])->name('customers');
-Route::get('/users',     [UserController::class,     'index'])->name('users');
+// ── TFA7: Customers CRUD ──────────────────────────────────────────────────
+Route::get('/customers',              [CustomerController::class, 'index'])->name('customers');
+Route::get('/customers/create',       [CustomerController::class, 'create'])->name('customers.create');
+Route::post('/customers',             [CustomerController::class, 'store'])->name('customers.store');
+Route::get('/customers/{customer}/edit',  [CustomerController::class, 'edit'])->name('customers.edit');
+Route::put('/customers/{customer}',       [CustomerController::class, 'update'])->name('customers.update');
+
+// ── TFA7: Users CRUD + Avatar Upload ─────────────────────────────────────
+Route::get('/users',              [UserController::class, 'index'])->name('users');
+Route::get('/users/create',       [UserController::class, 'create'])->name('users.create');
+Route::post('/users',             [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{user}/edit',  [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{user}',       [UserController::class, 'update'])->name('users.update');
