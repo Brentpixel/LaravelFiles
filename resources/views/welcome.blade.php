@@ -125,17 +125,7 @@
     </style>
 </head>
 <body>
-<header>
-    <h1>First<span>Laravel</span></h1>
-    <nav>
-        <a href="{{ route('home') }}" class="active">Home</a>
-        <a href="{{ route('tasks') }}">All Tasks</a>
-        <a href="{{ route('profile') }}">Profile</a>
-        <a href="{{ route('about') }}">About</a>
-        <a href="{{ route('customers') }}">Customers</a>
-        <a href="{{ route('users') }}">Users</a>
-    </nav>
-</header>
+@include('partials.nav')
 
 <main>
     <div class="page-header">

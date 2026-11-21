@@ -1,7 +1,7 @@
-# FirstLaravel — IT0049 TFA7
+# FirstLaravel — IT0049 TFA8
 
-**Tasks for Today Management System** with Forms, Validation, and File Upload.
-Built with Laravel 9 and MySQL.
+**Locking It Down: Resource Controllers and Authentication in Laravel.**
+Built with Laravel 9 and MySQL. Extends TFA7 with resource controllers, auth middleware, and login/logout.
 
 ---
 
@@ -15,24 +15,70 @@ Built with Laravel 9 and MySQL.
 
 ---
 
-## Pages
+## Pages & Routes
 
-| URL                        | Method   | Description                                       |
-|----------------------------|----------|---------------------------------------------------|
-| `/`                        | GET      | **Welcome** – Today's tasks with status summary   |
-| `/tasks`                   | GET      | **Task List** – All tasks grouped by date          |
-| `/profile`                 | GET      | **Profile** – The seeded developer user record     |
-| `/about`                   | GET      | **About** – Static developer info page             |
-| `/customers`               | GET      | **Customer List** – All customers + Add/Edit links |
-| `/customers/create`        | GET      | **Add Customer** – Create form with validation     |
-| `/customers`               | POST     | Store new customer                                 |
-| `/customers/{id}/edit`     | GET      | **Edit Customer** – Pre-filled edit form           |
-| `/customers/{id}`          | PUT      | Update customer                                    |
-| `/users`                   | GET      | **User List** – All users with avatars             |
-| `/users/create`            | GET      | **Add User** – Create form with validation         |
-| `/users`                   | POST     | Store new user                                     |
-| `/users/{id}/edit`         | GET      | **Edit User** – Pre-filled form + avatar upload    |
-| `/users/{id}`              | PUT      | Update user + process avatar                       |
+> **Auth required:** `/customers/*` and `/users/*` and `/profile` are protected by the `auth` middleware.
+> Visiting them while logged out redirects to `/login`.
+
+| URL                              | Method        | Auth? | Description                                        |
+|----------------------------------|---------------|-------|----------------------------------------------------|
+| `/`                              | GET           | No    | **Welcome** – Today's tasks with status summary    |
+| `/tasks`                         | GET           | No    | **Task List** – All tasks grouped by date          |
+| `/about`                         | GET           | No    | **About** – Static developer info page             |
+| `/login`                         | GET           | No    | **Login** – Login form                             |
+| `/login`                         | POST          | No    | Submit credentials → redirects to `/`              |
+| `/logout`                        | POST          | Yes   | Destroy session → redirects to `/login`            |
+| `/profile`                       | GET           | Yes   | **Profile** – The seeded developer user record     |
+| `/customers`                     | GET           | Yes   | **Customer List** – All customers                  |
+| `/customers/create`              | GET           | Yes   | **Add Customer** – Create form with validation     |
+| `/customers`                     | POST          | Yes   | Store new customer                                 |
+| `/customers/{customer}`          | GET           | Yes   | **Customer Detail**                                |
+| `/customers/{customer}/edit`     | GET           | Yes   | **Edit Customer** – Pre-filled edit form           |
+| `/customers/{customer}`          | PUT/PATCH     | Yes   | Update customer                                    |
+| `/customers/{customer}`          | DELETE        | Yes   | Delete customer                                    |
+| `/users`                         | GET           | Yes   | **User List** – All users with avatars             |
+| `/users/create`                  | GET           | Yes   | **Add User** – Create form with validation         |
+| `/users`                         | POST          | Yes   | Store new user                                     |
+| `/users/{user}`                  | GET           | Yes   | **User Detail**                                    |
+| `/users/{user}/edit`             | GET           | Yes   | **Edit User** – Pre-filled form + avatar upload    |
+| `/users/{user}`                  | PUT/PATCH     | Yes   | Update user + process avatar                       |
+| `/users/{user}`                  | DELETE        | Yes   | Delete user + remove avatar file                   |
+
+---
+
+## TFA8 — What Changed
+
+### 1. Resource Controllers
+Both `CustomerController` and `UserController` were refactored to full Laravel resource controllers with all 7 conventional methods:
+`index`, `create`, `store`, `show`, `edit`, `update`, `destroy`.
+
+Routes registered with:
+```php
+Route::resource('customers', CustomerController::class);
+Route::resource('users', UserController::class);
+```
+
+### 2. Authentication
+- Manual `AuthenticatedSessionController` implements Breeze-compatible login/logout behavior.
+- Login form at `/login` with email + password.
+- Session-based auth using Laravel's built-in `Auth` facade.
+- Passwords stored as bcrypt hashes.
+
+### 3. Auth Middleware Protection
+Both resource route groups and `/profile` are wrapped in `middleware('auth')`:
+```php
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', ...);
+    Route::resource('customers', CustomerController::class);
+    Route::resource('users', UserController::class);
+});
+```
+
+### 4. Test Login Credentials
+| Email                | Password   |
+|----------------------|------------|
+| brent@example.com    | password   |
+| admin@example.com    | password   |
 
 ---
 
@@ -177,10 +223,12 @@ Then open: `http://localhost:8000`
 ```
 app/
   Http/Controllers/
+    Auth/
+      AuthenticatedSessionController.php  ← login (create/store), logout (destroy)
     TaskController.php       ← welcome(), index(), profile()
     PageController.php       ← about()
-    CustomerController.php   ← index(), create(), store(), edit(), update()
-    UserController.php       ← index(), create(), store(), edit(), update() + avatar upload
+    CustomerController.php   ← index, create, store, show, edit, update, destroy
+    UserController.php       ← index, create, store, show, edit, update, destroy + avatar upload
   Models/
     Task.php
     User.php
@@ -197,21 +245,31 @@ database/
     DatabaseSeeder.php
 
 resources/views/
-  welcome.blade.php          ← /
-  tasks.blade.php            ← /tasks
-  profile.blade.php          ← /profile
-  about.blade.php            ← /about
-  customers.blade.php        ← /customers (list)
-  customers_create.blade.php ← /customers/create
-  customers_edit.blade.php   ← /customers/{id}/edit
-  users.blade.php            ← /users (list with avatars)
-  users_create.blade.php     ← /users/create
-  users_edit.blade.php       ← /users/{id}/edit (with avatar upload)
+  auth/
+    login.blade.php            ← /login
+  partials/
+    nav.blade.php              ← shared navigation (auth-aware: shows Login or Logout)
+    styles.blade.php           ← shared CSS
+  customers/
+    index.blade.php            ← /customers
+    create.blade.php           ← /customers/create
+    show.blade.php             ← /customers/{customer}
+    edit.blade.php             ← /customers/{customer}/edit
+  users/
+    index.blade.php            ← /users (with avatar column)
+    create.blade.php           ← /users/create
+    show.blade.php             ← /users/{user}
+    edit.blade.php             ← /users/{user}/edit (avatar upload)
+  welcome.blade.php            ← /
+  tasks.blade.php              ← /tasks
+  profile.blade.php            ← /profile
+  about.blade.php              ← /about
+  home.blade.php               ← /home
 
 routes/
   web.php
 
-storage/app/public/avatars/  ← uploaded avatar thumbnails (200×200)
+storage/app/public/avatars/   ← uploaded avatar thumbnails (200×200)
 ```
 
 ---

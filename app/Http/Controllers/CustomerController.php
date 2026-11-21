@@ -8,13 +8,21 @@ use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
     /**
+     * Apply auth middleware to all resource actions.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of all customers.
      */
     public function index()
     {
         $customers = Customer::all();
 
-        return view('customers', compact('customers'));
+        return view('customers.index', compact('customers'));
     }
 
     /**
@@ -22,7 +30,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('customers_create');
+        return view('customers.create');
     }
 
     /**
@@ -42,8 +50,16 @@ class CustomerController extends Controller
             'phone'     => $request->phone ?? '',
         ]);
 
-        return redirect()->route('customers')
+        return redirect()->route('customers.index')
                          ->with('success', 'Customer created successfully.');
+    }
+
+    /**
+     * Display the specified customer.
+     */
+    public function show(Customer $customer)
+    {
+        return view('customers.show', compact('customer'));
     }
 
     /**
@@ -51,7 +67,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        return view('customers_edit', compact('customer'));
+        return view('customers.edit', compact('customer'));
     }
 
     /**
@@ -71,7 +87,18 @@ class CustomerController extends Controller
             'phone'     => $request->phone ?? $customer->phone,
         ]);
 
-        return redirect()->route('customers')
+        return redirect()->route('customers.index')
                          ->with('success', 'Customer updated successfully.');
+    }
+
+    /**
+     * Remove the specified customer from the database.
+     */
+    public function destroy(Customer $customer)
+    {
+        $customer->delete();
+
+        return redirect()->route('customers.index')
+                         ->with('success', 'Customer deleted successfully.');
     }
 }
